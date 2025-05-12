@@ -13,8 +13,6 @@ Actualmente la herramienta copia de forma segura todos los archivos **Prefetch (
 * Manejo de errores (ruta de destino, permisos, etc.).
 * Métricas devueltas (nº de archivos, duración, destino).
 
-Cada ejecución muestra un banner ASCII **m4rcmo15** al inicio para que sepas que estás usando Triage‑kit.
-
 ---
 
 ## Requisitos rápidos
