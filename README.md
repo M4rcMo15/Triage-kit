@@ -20,7 +20,7 @@ Captura, en un solo comando, los artefactos más útiles para un análisis rápi
 2. Clona o descarga el repositorio:
 
    ```powershell
-   git clone https://github.com/tu-usuario/triage-kit.git
+   git clone https://github.com/M4rcMo15/triage-kit.git
    cd triage-kit\windows
    ```
 3. (Opcional) Firma el script o añade la carpeta a tu política de ejecución.
@@ -32,24 +32,20 @@ Captura, en un solo comando, los artefactos más útiles para un análisis rápi
 ## Uso básico
 
 ```powershell
-# Desde PowerShell 7 elevado, en la carpeta "windows"
+# Desde PowerShell 7 elevado, en la carpeta del repositorio "windows"
 ./triage-windows.ps1 -Verbose
 ```
 
 El script ejecuta internamente **`Full-Run`**, que llama a cada módulo y genera:
 
 * Carpeta `output/` con subcarpetas por artefacto.
-* ZIP firmado: `evidence-<HOST>-<TIMESTAMP>.zip` con todos los archivos, manifest y log.
-
-Una vez finalizado, comprime la carpeta y muestra dos tablas con métricas de copia y tiempos.
-
 ---
 
 ## Requisitos
 
 * Windows 10 / Server 2016 o superior.
 * Volumen C:\ formateado en NTFS (para USN Journal).
-* Cuenta Administrador o ejecución como **SYSTEM** (PsExec) si Tamper Protection bloquea SAM/SECURITY.
+* Cuenta Administrador o ejecución como **SYSTEM** (PsExec) si Tamper Protection de Windows Defender bloquea la adquisición de SAM/SECURITY.
 
 ---
 
