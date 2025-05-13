@@ -1,98 +1,58 @@
 # Triage‑kit
 
-*Forensic triage toolkit – versión **MVP Windows Prefetch***
+**Minimal Windows Forensic Triage – v0.2 (MVP)**
+
+Captura, en un solo comando, los artefactos más útiles para un análisis rápido de incidentes en sistemas Windows.
+
+| Artefacto                  | Qué contiene                    | Archivo de salida              |
+| -------------------------- | ------------------------------- | ------------------------------ |
+| Prefetch                   | Historial de ejecución reciente | `output/prefetch/*.pf`         |
+| Event Logs                 | Security, System, Application   | `output/eventLogs/*.evtx`      |
+| Registry Hives             | SAM, SYSTEM, SECURITY           | `output/hives/*.hiv`           |
+| USN Journal                | Cambios NTFS de C:\\            | `output/usn/usn_journal_C.txt` |
+| Scheduled Tasks & Services | Persistencia y autostart        | `output/tasks/*.csv`           |
 
 ---
 
-## ¿Qué hace?
+## Instalación rápida
 
-Actualmente la herramienta copia de forma segura todos los archivos **Prefetch (\*.pf)** de Windows a una carpeta que elijas, comprobando:
+1. **PowerShell 7.4+**: `winget install --id Microsoft.PowerShell -e`
+2. Clona o descarga el repositorio:
 
-* Privilegios de administrador (imprescindible para acceder a `C:\Windows\Prefetch`).
-* Que el **Prefetcher** esté habilitado.
-* Manejo de errores (ruta de destino, permisos, etc.).
-* Métricas devueltas (nº de archivos, duración, destino).
+   ```powershell
+   git clone https://github.com/tu-usuario/triage-kit.git
+   cd triage-kit\windows
+   ```
+3. (Opcional) Firma el script o añade la carpeta a tu política de ejecución.
 
----
-
-## Requisitos rápidos
-
-| Sistema    | Versión mínima   |
-| ---------- | ---------------- |
-| Windows    | 10 / Server 2016 |
-| PowerShell | 7.4 LTS (pwsh)   |
-
-> Instala PowerShell 7 con Winget:
->
-> ```powershell
-> winget install --id Microsoft.PowerShell --source winget
-> ```
-
----
-
-## Instalación
-
-```powershell
-# 1. Clona el repositorio
-git clone https://github.com/M4rcMo15/triage-kit.git
-cd triage-kit\windows
-
-# 2. (Opcional) Revisa el código y firma si lo deseas
-
-# 3. Ejecuta el script
-pwsh -File .\triage-windows.ps1
-```
+> ⚠️  Debes ejecutar el script en una consola *elevada* (Administrador) para acceder a todos los artefactos.
 
 ---
 
 ## Uso básico
 
-### 1. Cargar la función en tu sesión
-
 ```powershell
-. .\triage-windows.ps1   # «dot‑source»
+# Desde PowerShell 7 elevado, en la carpeta "windows"
+./triage-windows.ps1 -Verbose
 ```
 
-### 2. Ejecutar la recolección
+El script ejecuta internamente **`Full-Run`**, que llama a cada módulo y genera:
 
-```powershell
-Save-PrefetchFile -Destination .\output\prefetch -Verbose
-```
+* Carpeta `output/` con subcarpetas por artefacto.
+* ZIP firmado: `evidence-<HOST>-<TIMESTAMP>.zip` con todos los archivos, manifest y log.
 
-Parámetros útiles:
-
-* **-Destination**  Carpeta donde se guardarán los archivos .pf.
-* **-WhatIf / -Confirm**  (gracias a SupportsShouldProcess).
-* **-Verbose**  Muestra archivos copiados en tiempo real.
-
-> El comando devuelve un objeto con métricas; p.ej. `($result).Copied`.
+Una vez finalizado, comprime la carpeta y muestra dos tablas con métricas de copia y tiempos.
 
 ---
 
-## Salida esperada
+## Requisitos
 
-```
-[+] Collecting Prefetch files...
-[+] Copiados 87 archivos .pf a 'C:\triage-kit\windows\output\prefetch'.
-
-Artifact  Copied Duration_ms Destination                                
---------  ------ ----------- -----------                                
-Prefetch  87     183         C:\triage-kit\windows\output\prefetch
-```
-
----
-
-## Preguntas frecuentes
-
-* **¿Por qué necesito ser administrador?**  El directorio Prefetch está protegido por ACLs de sistema.
-* **¿Qué pasa si copié 0 archivos?**  Puede que el servicio Prefetcher esté deshabilitado (`EnablePrefetcher=0`).
+* Windows 10 / Server 2016 o superior.
+* Volumen C:\ formateado en NTFS (para USN Journal).
+* Cuenta Administrador o ejecución como **SYSTEM** (PsExec) si Tamper Protection bloquea SAM/SECURITY.
 
 ---
 
 ## Licencia
 
-MIT. Consulta `LICENSE` para más detalles.
-
----
-
-¡Contribuciones, issues y PRs son bienvenidos! Abre un issue si encuentras un bug o tienes ideas de nuevos artefactos.
+Este proyecto se publica bajo la licencia **MIT**.
